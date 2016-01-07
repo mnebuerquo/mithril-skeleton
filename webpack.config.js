@@ -68,5 +68,8 @@ module.exports = {
                 loader: 'imports?jQuery=jquery'
             }
         ]
+    },
+    devServer: {
+      port: 9001
     }
 };
