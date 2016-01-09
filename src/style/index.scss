@@ -1,7 +1,9 @@
 // This gets loaded after bootstrap and will be where you import your styles for your components and modules.
 // Its very important to not remove the following comments as they are used to add components and modules to your project
 @import '../modules/main/style.scss';
+@import '../modules/login/style.scss';
 /*===== yeoman module hook =====*/
 @import '../components/menu/style.scss';
 @import '../components/footer/style.scss';
+@import '../components/authenticate/style.scss';
 /*===== yeoman component hook =====*/

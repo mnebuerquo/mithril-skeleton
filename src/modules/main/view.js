@@ -1,4 +1,7 @@
 export default function(ctrl) {
-	let vm = ctrl.vm;
-	return m('div','Hello World!');
+  let vm = ctrl.vm;
+
+  return m('.main',[
+      m('div','Hello World!')
+    ]);
 }

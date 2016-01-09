@@ -22,6 +22,15 @@ var routes = {
                 lazyLoad();
             });
         }
+    },
+    '/login': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/login'] = require('./modules/login');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
     }
 };
 m.route(document.body, '/', routes);
