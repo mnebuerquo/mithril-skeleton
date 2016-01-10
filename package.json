@@ -21,6 +21,7 @@
   "scripts": {
     "postinstall": "bower install",
     "build": "webpack",
+    "clean": "rm -rf build/*",
     "deploy": "webpack -p --config webpack.production.config.js",
     "dev-server": "webpack && webpack-dev-server --content-base=build/ --inline"
   }
