@@ -5,8 +5,8 @@ server {
 
   location / {
     # mithril app
-    root /var/www/vhosts/mithril-skeleton/build
-    index index.html index.htm
+    root /var/www/vhosts/mithril-skeleton/build ;
+    index index.html index.htm ;
   }
 
   location /express {
