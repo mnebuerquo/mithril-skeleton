@@ -2,6 +2,8 @@
 // Its very important to not remove the following comments as they are used to add components and modules to your project
 @import '../modules/main/style.scss';
 @import '../modules/login/style.scss';
+@import '../modules/profile/style.scss';
+@import '../modules/logout/style.scss';
 /*===== yeoman module hook =====*/
 @import '../components/menu/style.scss';
 @import '../components/footer/style.scss';

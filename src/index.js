@@ -31,6 +31,24 @@ var routes = {
                 lazyLoad();
             });
         }
+    },
+    '/profile': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/profile'] = require('./modules/profile');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
+    },
+    '/logout': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/logout'] = require('./modules/logout');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
     }
 };
 m.route(document.body, '/', routes);

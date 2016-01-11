@@ -3,9 +3,29 @@ import m from 'mithril';
 class Session{
   constructor(config){
     this.config = config;
-    this.token = m.prop('');
     this.user = m.prop({});
+    if(!localStorage.access_token){
+      localStorage.access_token='';
+    }
+    this._token = m.prop(localStorage.access_token);
     this.currentRoute = m.prop('');
+    this.token = function (){
+      if(!arguments.length){
+        return this._token();
+      } else {
+        this._token(arguments[0]);
+        localStorage.access_token = this._token();
+        this.getUser();
+      }
+    }
+    if(this.token()){
+      this.getUser();
+    }
+  }
+
+  logOut(){
+    this.token('');
+    this.user({});
   }
 
   isAuthenticated() {
@@ -16,12 +36,24 @@ class Session{
     }
   }
 
-  xhrConfig(xhr) {
-    xhr.setRequestHeader("Authorization", "Bearer "+this.token);
+  xhrConfig() {
+    let token = this.token();
+    return function(xhr){
+      xhr.setRequestHeader("Authorization", "Bearer "+token);
+    }
   }
 
   getUser() {
-    return m.request({method: 'GET', url: this.config.api.url+'user', config: this.xhrConfig});
+    let self = this;
+    m.request({
+      method: 'GET',
+           url: this.config.api.url+'user',
+           config: this.xhrConfig(),
+    }).then(
+      function(user){
+        self.user(user);
+      }
+    );
   }
 
 }
