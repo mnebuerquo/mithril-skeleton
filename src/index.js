@@ -22,6 +22,33 @@ var routes = {
                 lazyLoad();
             });
         }
+    },
+    '/login': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/login'] = require('./modules/login');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
+    },
+    '/profile': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/profile'] = require('./modules/profile');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
+    },
+    '/logout': {
+        controller: function () {
+            require.ensure([], () => {
+                routes['/logout'] = require('./modules/logout');
+                m.route(m.route());
+                lazyLoad();
+            });
+        }
     }
 };
 m.route(document.body, '/', routes);
