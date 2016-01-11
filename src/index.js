@@ -51,4 +51,4 @@ var routes = {
         }
     }
 };
-m.route(document.body, '/', routes);
+m.route(document.getElementById('body-container'), '/', routes);
