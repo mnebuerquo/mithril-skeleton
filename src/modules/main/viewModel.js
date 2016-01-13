@@ -1,5 +1,5 @@
 
-import {FormField} from '../../lib/form-input.js';
+import {DateTriple} from '../../lib/form-input.js';
 
 export default class VM {
 	constructor(args) {
@@ -8,22 +8,17 @@ export default class VM {
     vm.value = m.prop('');
     vm.error = m.prop('');
 
-    var classes = ['col-md-4'];
-    var val = [
-      (v)=>{
-        return (v<1||v>31)?'Enter a valid date.':false;
-      },
-      ];
+    var classes = ['bob'];
+    var val = [ ];
     var settings = {
       name: 'testinput',
-      type: 'number',
       classlist: classes,
       error: vm.error,
       value: vm.value,
-      validators: val
+      validators: val,
     };
 
-    let c = new FormField(settings);
+    let c = new DateTriple(settings);
     vm.test = m.component(c);
 
 		return vm;
