@@ -1,8 +1,9 @@
 import VM from '../viewModel.js';
 
-var BS = require('../../../helpers/bootstrap');
+import * as BS from '../../../helpers/bootstrap';
 
-var moment = require('moment');
+import moment from 'moment';
+import {DateTriple} from '../../../lib/form-input.js';
 
 export default class VMpassword extends VM {
 
@@ -14,51 +15,24 @@ export default class VMpassword extends VM {
     vm.username = m.prop('');
     vm.password = m.prop('');
     vm.repeat = m.prop('');
+    vm.birthday = m.prop('');
+    vm.bderror = m.prop('');
 
-    vm.birthdayYear  = m.prop('');
-    vm.birthdayMonth = m.prop('');
-    vm.birthdayDay   = m.prop('');
+    var options = {
+      name: 'birthday',
+      validators: [
+        (v)=>{ return moment(v).isAfter(moment())?'Date must be in the past!':false; },
+      ],
+      childClasses:['col-xs-4','col-md-4'],
+      classlist:[],
+      placeholder: 'Birthday',
+      value:vm.birthday,
+      error:vm.bderror
+    }
+    vm.dateobj = new DateTriple(options);
+    vm.datecmp = m.component(vm.dateobj);
 
     vm.error = m.prop('');
-
-    //define keys and properties for date fields
-    vm.datefields = {
-      Year: {placeholder: 'YYYY', digits:4, min:1900, max:(new Date().getFullYear())},
-      Month: {placeholder: 'MM', digits:2, min:1, max:12},
-      Day: {placeholder: 'DD', digits:2, min:1, max:31}
-    };
-
-    //define an getter/setter function with validation for date fields
-    vm.dateAccess = function dateAccess (key,value){
-      //access value if not specifying one
-      if(arguments.length<2){
-        return vm['birthday'+key]();
-      }
-      var intval = parseInt(value);
-      //validate a date value for the key
-      //then set the value for the appropriate property
-      var fieldprops = vm.datefields[key];
-      if(value && value.length>fieldprops.digits){
-        //too many digits
-        vm.dateErrors[key](key+' may have a maximum of '+fieldprops.digits+'.');
-      } else if(intval>fieldprops.max || intval<fieldprops.min){
-        //out of bounds
-        vm.dateErrors[key](key+' must be between '+fieldprops.min+' and '+fieldprops.max+'.');
-      } else {
-        vm.dateErrors[key]('');
-        vm['birthday'+key](value||'');
-      }
-    };
-
-    //curry getter/setter function for each key
-    vm.dateAccessors = {};
-    vm.dateErrors = {};
-    Object.keys(vm.datefields).forEach(function(key){
-      vm.dateAccessors[key] = function(value){
-        return vm.dateAccess(key,value);
-      };
-      vm.dateErrors[key]=m.prop('');
-    });
 
     return vm;
   }
@@ -100,16 +74,7 @@ export default class VMpassword extends VM {
         m("input.repeat.col-md-6[placeholder='Repeat Password'][name=repeat][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
-        m('.birthdate',
-          ['Year','Month','Day'].map( (field)=>{
-            return m("input.col-md-4.birthday"+field+
-              "[placeholder='Birthday "+field+"']"+
-              "[name=birthday"+field+"]"+
-              "[type=number]",
-              {oninput: m.withAttr("value", ctrl.vm.dateAccessors[field])},
-              ctrl.vm.dateAccessors[field]());
-          } )
-         ),
+        m(ctrl.vm.datecmp),
         m("button.col-md-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }

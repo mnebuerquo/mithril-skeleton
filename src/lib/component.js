@@ -17,8 +17,10 @@ export default class Component {
     var vm = this;
     vm.controller = function Controller(cArgs){
       this.vm = vm;
-      vm.setControllerArgs(cArgs);
+      cArgs = cArgs || {};
+      vm.init(cArgs);
     }
+    this.init(args);
   }
 
   view(ctrl){
@@ -27,7 +29,7 @@ export default class Component {
     return m('.component','Component base view should be overridden.');
   }
 
-  setControllerArgs(args){
+  init(args){
     // This function is called by the controller to do any
     // initialization necessary.
     this.controllerArgs = args;

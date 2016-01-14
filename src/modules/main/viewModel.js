@@ -1,4 +1,5 @@
 
+import moment from 'moment';
 import {DateTriple} from '../../lib/form-input.js';
 
 export default class VM {
@@ -9,7 +10,9 @@ export default class VM {
     vm.error = m.prop('');
 
     var classes = ['bob'];
-    var val = [ ];
+    var val = [
+      (v)=>{ return moment(v).isAfter(moment())?'Date must be in the past!':false; },
+      ];
     var settings = {
       name: 'testinput',
       classlist: classes,

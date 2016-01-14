@@ -2,6 +2,20 @@ import m from 'mithril';
 import Component from './component.js';
 var moment = require('moment');
 
+function storeValueOrError(value){
+  var error = '';
+  this.validators.some(function(fn){
+    error = fn(value);
+    return error?error:false;
+  });
+  if(!error){
+    this.error('');
+    this.value(value);
+  } else {
+    this.error(error);
+  }
+}
+
 export class FormField extends Component {
   // FormField is a base class for a component.
   // This can be extended for specialized form fields.
@@ -9,47 +23,47 @@ export class FormField extends Component {
   constructor(args){
     //always call super to set up controller
     super(args);
+  }
+
+  init(args){
+    super.init(args);
+    args = args || {};
 
     // this class constructs a view-model
     var vm = this;
 
     //field has a name which is required
-    vm.name = args.name || 'unnamedField';
+    vm.name = args.name || vm.name || 'unnamedField';
 
     //field can have any css classes applied
-    vm.classlist = args.classlist || [];
+    vm.classlist = (vm.classlist || []).concat(args.classlist);
 
     //field can have an error accessor
-    vm.error = args.error || m.prop('');
+    vm.error = args.error || vm.error || m.prop('');
 
     //field needs to have a value accessor
-    vm.value = args.value || m.prop('');
+    vm.value = args.value || vm.value || m.prop('');
 
     //field has an html input type
-    vm.type = args.type || 'text';
+    vm.type = args.type || vm.type || 'text';
+
+    //placeholder will have no default text
+    vm.placeholder = args.placeholder || vm.placeholder || '';
 
     //field can have an array of functions for validation
     //validators accept a value argument and return null or error
     //message
-    vm.validators = args.validators || [];
+    vm.validators = (vm.validators || []).concat(args.validators || []);
 
+    vm.storeValueOrError = storeValueOrError;
     //the accessor is a getter/setter which performs validation and
     //sets the error property
     vm.accessor = function(value){
       if(arguments.length<1){
         return vm.value();
       } else {
-        var error = '';
-        vm.validators.some(function(fn){
-          error = fn(value);
-          return error?error:false;
-        });
-        if(!error){
-          vm.value(value);
-          vm.error('');
-        } else {
-          vm.error(error);
-        }
+        vm.storeValueOrError(value);
+        return vm.value();
       }
     }
   }
@@ -61,6 +75,7 @@ export class FormField extends Component {
     attributes.name = vm.name;
     attributes.type = vm.type || 'text';
     attributes.oninput = m.withAttr("value", vm.accessor);
+    attributes.placeholder = vm.placeholder || '';
     var initialValue = vm.value();
     return m(selector,attributes,initialValue);
   }
@@ -71,17 +86,29 @@ export class FormField extends Component {
 export class NumberField extends FormField {
   constructor(args){
     super(args);
+  }
+
+  init(args){
+    super.init(args);
+    args = args || {};
+
     var vm = this;
     vm.type = 'number';
 
     if(undefined!=args.min){
-      vm.validators.push( (v)=>{return (v>=args.min)?false:vm.name+' must be at least '+args.min+'.';});
+      vm.validators.push(
+          (v)=>{return (v>=args.min)?false:vm.name+' must be at least '+args.min+'.';}
+          );
     }
     if(undefined!=args.max){
-      vm.validators.push( (v)=>{return (v<=args.max)?false:vm.name+' must be at most '+args.max+'.';});
+      vm.validators.push(
+          (v)=>{return (v<=args.max)?false:vm.name+' must be at most '+args.max+'.';}
+          );
     }
     if(undefined!=args.integer){
-      vm.validators.push( (v)=>{return (parseInt(v)==parseFloat(v))?false:vm.name+' must be an integer.';} );
+      vm.validators.push(
+          (v)=>{return (parseInt(v)==parseFloat(v))?false:vm.name+' must be an integer.';}
+          );
     }
 
   }
@@ -93,6 +120,10 @@ export class NumberField extends FormField {
 export class DateField extends FormField {
   constructor(args){
     super(args);
+  }
+
+  init(args){
+    super.init(args);
     var vm = this;
     vm.type = 'date';
   }
@@ -100,17 +131,33 @@ export class DateField extends FormField {
 
 
 
-
 export class DateTriple extends Component {
   constructor(args){
     super(args);
+  }
+
+  init(args){
+    super.init(args);
+    args = args || {};
+
     var vm = this;
 
-    vm.error = args.error || m.prop('');
-    vm.value = args.value || m.prop('');
+    vm.error = args.error || vm.error || m.prop('');
+    vm.value = args.value || vm.value || m.prop('');
 
-    vm.name = args.name;
+    vm.name = args.name || vm.name;
 
+    vm.classlist = (vm.classlist || []).concat(args.classlist);
+    vm.childClasses = args.childClasses || vm.childClasses || [];
+    vm.placeholder = args.placeholder || vm.placeholder || '';
+
+    var vinitial = [
+      (v)=>{return moment(v,'YYYY-MM-DD').isValid()?false:'This date is not a valid date.';},
+      ];
+
+    vm.validators = (vm.validators || vinitial).concat(args.validators || vinitial);
+
+    vm.storeValueOrError = storeValueOrError;
     function getset(type){
       var store = '';
       return function(v){
@@ -136,6 +183,8 @@ export class DateTriple extends Component {
       settings.integer = true;
       settings.value = vm[key+'Value'];
       settings.error = vm[key+'Error'];
+      settings.classlist = vm.childClasses;
+      settings.placeholder = vm.placeholder+' '+key;
       vm[key+'Object']=new NumberField(settings);
       vm[key+'Component']=m.component(vm[key+'Object']);
     });
@@ -147,15 +196,15 @@ export class DateTriple extends Component {
       this.error(this.YearError() || this.MonthError() || this.DateError());
     } else {
       var datestring = this.YearValue()+'-'+this.MonthValue()+'-'+this.DateValue();
-      this.value(
-          moment(datestring,'YYYY-MM-DD').format('YYYY-MM-DD')
-          );
+      var newvalue = moment(datestring,'YYYY-MM-DD').format('YYYY-MM-DD');
+      this.storeValueOrError(newvalue);
     }
   }
 
   view(ctrl){
     var vm = ctrl.vm;
-    return m('.dateTriple',[
+    var selector = ['div.dateTriple'].concat(vm.classlist).join('.');
+    return m(selector,[
         m(vm.YearComponent),
         m(vm.MonthComponent),
         m(vm.DateComponent),
