@@ -3,9 +3,9 @@ export default function layout(contentView){
     let menu = require('../components/menu');
     let footer = require('../components/footer');
     return m(".layout",[
-        m('nav', menu),
+        m(menu),
         m('main',contentView(ctrl)),
-        m('footer',footer)
+        m(footer)
     ]);
   }
 }
