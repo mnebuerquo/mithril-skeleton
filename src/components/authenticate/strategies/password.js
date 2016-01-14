@@ -39,13 +39,13 @@ export default class VMpassword extends VM {
 
   loginForm(ctrl) {
     return m('.login', BS.row([
-          m("input.username.col-md-12[placeholder='Email Address'][name=username]",
+          m("input.username.col-xs-12[placeholder='Email Address'][name=username]",
             {oninput: m.withAttr("value", ctrl.vm.username)},
             ctrl.vm.username()),
-          m("input.password.col-md-12[placeholder=Password][name=password][type=password]",
+          m("input.password.col-xs-12[placeholder=Password][name=password][type=password]",
             {oninput: m.withAttr("value", ctrl.vm.password)},
             ctrl.vm.password()),
-          m("button.col-md-12", {onclick: ()=>{ctrl.vm.loginSubmit();}}, "Login"),
+          m("button.col-xs-12", {onclick: ()=>{ctrl.vm.loginSubmit();}}, "Login"),
           ]));
   }
 
@@ -65,17 +65,17 @@ export default class VMpassword extends VM {
 
   createForm(ctrl) {
     return m('.createAccount',[
-        m("input.username.col-md-12[placeholder='Email Address'][name=username]",
+        m("input.username.col-xs-12[placeholder='Email Address'][name=username]",
           {oninput: m.withAttr("value", ctrl.vm.username)},
           ctrl.vm.username()),
-        m("input.password.col-md-6[placeholder=Password][name=password][type=password]",
+        m("input.password.col-xs-6[placeholder=Password][name=password][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.password)},
           ctrl.vm.password()),
-        m("input.repeat.col-md-6[placeholder='Repeat Password'][name=repeat][type=password]",
+        m("input.repeat.col-xs-6[placeholder='Repeat Password'][name=repeat][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
         m(ctrl.vm.datecmp),
-        m("button.col-md-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
+        m("button.col-xs-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }
 
@@ -84,7 +84,7 @@ export default class VMpassword extends VM {
     if(this.password() !== this.repeat()){
       //reject form submission here
       console.log('passwords dont match');
-      this.error('Passwords do not match.');
+      this.onError('Passwords do not match.');
       return;
     } else {
     }

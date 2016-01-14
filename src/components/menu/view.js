@@ -10,7 +10,5 @@ export default function(ctrl) {
             );
         });
 
-  return m('.mainmenu',
-    BS.nav( menuItems, ['nav-pills'])
-  );
+  return BS.nav( menuItems, ['nav-pills']);
 }
