@@ -38,15 +38,15 @@ export default class VMpassword extends VM {
   }
 
   loginForm(ctrl) {
-    return m('.login', BS.row([
-          m("input.username.col-xs-12[placeholder='Email Address'][name=username]",
-            {oninput: m.withAttr("value", ctrl.vm.username)},
-            ctrl.vm.username()),
-          m("input.password.col-xs-12[placeholder=Password][name=password][type=password]",
-            {oninput: m.withAttr("value", ctrl.vm.password)},
-            ctrl.vm.password()),
-          m("button.col-xs-12", {onclick: ()=>{ctrl.vm.loginSubmit();}}, "Login"),
-          ]));
+    return m('.login', [
+        m("input.username.col-xs-12[placeholder='Email Address'][name=username]",
+          {oninput: m.withAttr("value", ctrl.vm.username)},
+          ctrl.vm.username()),
+        m("input.password.col-xs-12[placeholder=Password][name=password][type=password]",
+          {oninput: m.withAttr("value", ctrl.vm.password)},
+          ctrl.vm.password()),
+        m("button.col-xs-12", {onclick: ()=>{ctrl.vm.loginSubmit();}}, "Login"),
+        ]);
   }
 
   loginSubmit(){
@@ -55,6 +55,11 @@ export default class VMpassword extends VM {
       username: this.username(),
       password: this.password()
     };
+    if(!postdata.username || !postdata.password)
+    {
+      this.onError({error: {text: 'You must specify both an identity and password to log in.'}});
+      return;
+    }
     var postargs = {
       method: "POST",
       url: this.apiUrl+"auth/local/login",
@@ -75,6 +80,7 @@ export default class VMpassword extends VM {
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
         m(ctrl.vm.datecmp),
+        m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""),
         m("button.col-xs-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }
@@ -84,19 +90,18 @@ export default class VMpassword extends VM {
     if(this.password() !== this.repeat()){
       //reject form submission here
       console.log('passwords dont match');
-      this.onError('Passwords do not match.');
+      this.onError({error: { text:'Passwords do not match.' } });
       return;
-    } else {
     }
-
-    return;
-
-    var bd = this.birthdayYear()+'-'+this.birthdayMonth()+'-'+this.birthdayDay();
-    console.log(bd);
+    if( !this.username() || !this.password() )
+    {
+      this.onError({error: {text: 'You must specify both an identity and password to create an account.'}});
+      return;
+    }
     var postdata = {
       username: this.username(),
       password: this.password(),
-      birthdate: this.birthdate()
+      birthdate: this.birthday()
     };
     var postargs = {
       method: "POST",
