@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var config = require('./config');
 
 module.exports = {
     entry: [
@@ -18,6 +19,7 @@ module.exports = {
         new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin('bower.json', ['main'])),
         new CopyWebpackPlugin([ {from: './src/images/favicon.ico'} ]),
         new ExtractTextPlugin('styles.css', { allChunks: true }),
+        new webpack.DefinePlugin({ 'CONFIG': JSON.stringify( require('./config') ) }),
         new webpack.ProvidePlugin({
             /*===== yeoman provide plugin hook =====*/
             m: 'mithril',

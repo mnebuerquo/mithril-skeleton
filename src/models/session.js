@@ -58,7 +58,7 @@ class Session{
 
 }
 
-var config = require('../config');
+var config = CONFIG;
 var _session = null;
 
 var session = ()=>{

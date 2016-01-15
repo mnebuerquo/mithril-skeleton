@@ -1,5 +1,5 @@
 var auth = require('../../components/authenticate');
-var conf = require('../../config');
+var conf = CONFIG;
 export default class VM {
 	constructor(args) {
 		var vm = this;
