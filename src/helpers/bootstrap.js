@@ -34,14 +34,15 @@ export function col(sizes, content){
   return m(classlist.join(''), content);
 }
 
-export function panel(content, title, type){
+export function panel(content, title, type, attrs){
+  attrs = attrs || {};
   let heading = title?m('.panel-heading',title):'';
   let panelclass = '.panel-default';
   if(type){
     type = type.replace('panel-','');
     panelclass = '.panel-'+type;
   }
-  return m('.panel'+panelclass,[
+  return m('.panel'+panelclass,attrs,[
       heading,
       m('.panel-body',content)
       ]);
