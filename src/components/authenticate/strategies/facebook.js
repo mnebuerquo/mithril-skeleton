@@ -1,5 +1,6 @@
 import VM from '../viewModel.js';
 import * as BS from '../../../helpers/bootstrap';
+var sk_conf = CONFIG.config;
 
 export default class VMfacebook extends VM {
   constructor(args) {
@@ -14,7 +15,7 @@ export default class VMfacebook extends VM {
     if(window.fbLoaded){
       vm.checkLoginState();
     } else {
-      vm.facebookInitSDK(CONFIG.auth.facebookAppID);
+      vm.facebookInitSDK(sk_conf.auth.facebook.appID);
     }
   }
 
@@ -34,11 +35,12 @@ export default class VMfacebook extends VM {
     }
 
     var postdata = {
-      'token': token
     };
+    var tokenField = sk_conf.auth.facebook.apiToken;
+    postdata[tokenField] = token;
     var options = {
       method: "POST",
-      url: CONFIG.api.url+'auth/facebook/token',
+      url: sk_conf.api.url+sk_conf.auth.facebook.apiRoute,
       data: postdata,
     };
     var statuscb = ()=>{vm.statusChangeCallback(response);};
@@ -90,7 +92,7 @@ export default class VMfacebook extends VM {
 
   doFBLogin(){
     var vm = this;
-    //TODO: move scope to CONFIG
+    var scope = sk_conf.auth.facebook.scope;
     vm.loginClick = true;
     FB.login(
         (response)=>{vm.statusChangeCallback(response);},

@@ -1,8 +1,8 @@
 import m from 'mithril';
 
 class Session{
-  constructor(config){
-    this.config = config;
+  constructor(sk_conf){
+    this.sk_conf = sk_conf;
     this.user = m.prop({});
     if(!localStorage.access_token){
       localStorage.access_token='';
@@ -52,7 +52,7 @@ class Session{
     let self = this;
     m.request({
       method: 'GET',
-      url: this.config.api.url+'user',
+      url: this.sk_conf.api.url+'user',
       config: this.xhrConfig(),
     }).then(
       function(user){
@@ -63,12 +63,12 @@ class Session{
 
 }
 
-var config = CONFIG;
+var sk_conf = CONFIG.config;
 var _session = null;
 
 var session = ()=>{
   if(!_session){
-    _session = new Session(config);
+    _session = new Session(sk_conf);
   }
   return _session;
 }

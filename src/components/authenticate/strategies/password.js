@@ -5,7 +5,7 @@ import * as BS from '../../../helpers/bootstrap';
 import moment from 'moment';
 import {DateTriple} from '../../../lib/form-input.js';
 
-var config = CONFIG;
+var sk_conf = CONFIG.config;
 
 export default class VMpassword extends VM {
 
@@ -82,8 +82,8 @@ export default class VMpassword extends VM {
         m("input.repeat.col-xs-6[placeholder='Repeat Password'][name=repeat][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
-        (config.app.requireBirthdate?m(ctrl.vm.datecmp):''),
-        (config.app.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
+        (sk_conf.app.requireBirthdate?m(ctrl.vm.datecmp):''),
+        (sk_conf.app.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
         m("button.col-xs-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }
@@ -105,7 +105,7 @@ export default class VMpassword extends VM {
       username: this.username(),
       password: this.password(),
     };
-    if(config.app.requireBirthdate){
+    if(sk_conf.app.requireBirthdate){
       postdata.birthdate = this.birthday();
     }
     var postargs = {

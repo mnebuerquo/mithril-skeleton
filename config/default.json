@@ -6,6 +6,11 @@
     "requireBirthdate": true
   },
   "auth":{
-    "facebookAppID": ""
+    "facebook":{
+      "appID": "",
+      "apiRoute": "auth/facebook/token",
+      "apiToken": "token",
+      "scope": "public_profile,email"
+    }
   }
 }
