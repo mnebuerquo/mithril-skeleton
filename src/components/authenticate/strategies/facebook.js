@@ -4,60 +4,109 @@ import * as BS from '../../../helpers/bootstrap';
 export default class VMfacebook extends VM {
   constructor(args) {
     super(args);
+
     var vm = this;
 
-    vm.fbLoaded = m.prop('');
-    vm.fbConnected = m.prop('');
-    vm.fbStatus = m.prop('nothing');
+    vm.fbResponse = m.prop('');
+    vm.loginClick = false;
+    vm.error = m.prop('');
 
-
-    return vm;
+    if(window.fbLoaded){
+      vm.checkLoginState();
+    } else {
+      vm.facebookInitSDK(CONFIG.auth.facebookAppID);
+    }
   }
 
 
+  // login to api with facebook token
+  apiLogin(){
+    var vm = this;
+    var response = vm.fbResponse();
 
+    // Get our token from the api, posting facebook's accessToken
+    // to api/auth/facebook/token
+    var token = (response && response.authResponse && response.authResponse.accessToken) || null;
+
+    if(!token){
+      console.log('No facebook access_token!');
+      return ;
+    }
+
+    var postdata = {
+      'token': token
+    };
+    var options = {
+      method: "POST",
+      url: CONFIG.api.url+'auth/facebook/token',
+      data: postdata,
+    };
+    var statuscb = ()=>{vm.statusChangeCallback(response);};
+    var logout = ()=>{FB.logout(statuscb);}
+    var onerror = (data)=>{vm.onError(data);};
+    var onlogin = (data)=>{
+      vm.afterLogin(data);
+      vm.setLogoutCallback(logout);
+    };
+    m.request(options).then(onlogin,onerror);
+  }
+
+
+  // Status handler functions for after login or check status
   facebookStatusNotAuthorized(response){
-    console.log('Facebook not authorized.');
-    this.fbConnected(false);
-    //FB.login();
-    this.fbStatus(response.status);
-    m.redraw();
-  }
-
-  facebookStatusConnected(response){
-    console.log('Facebook Logged in.');
-    this.fbConnected(true);
-    //Get token!
-    this.fbStatus(response.status);
-    m.redraw();
+    this.fbResponse(response);
+    this.formReRender();
   }
 
   facebookStatusUnknown(response){
-    console.log('Facebook unknown status.');
-    this.fbConnected(false);
-    //FB.login();
-    this.fbStatus(response.status);
-    m.redraw();
+    this.fbResponse(response);
+    this.formReRender();
   }
 
-  facebookAfterInit(){
+  facebookStatusConnected(response){
+    this.fbResponse(response);
+    this.formReRender();
+
+    if(this.loginClick){
+      this.apiLogin();
+    }
+  }
+
+
+
+  // Callback for FB login status
+  statusChangeCallback(response){
+    console.log(response);
+    if (response.status === 'connected') {
+      this.facebookStatusConnected(response);
+    } else if (response.status === 'not_authorized') {
+      this.facebookStatusNotAuthorized(response);
+    } else {
+      this.facebookStatusUnknown(response);
+    }
+  }
+
+
+
+  doFBLogin(){
     var vm = this;
-    vm.fbLoaded(true);
-    vm.fbStatus('loaded');
+    //TODO: move scope to CONFIG
+    vm.loginClick = true;
+    FB.login(
+        (response)=>{vm.statusChangeCallback(response);},
+        {scope: 'public_profile,email'}
+        );
+  }
+
+  checkLoginState() {
     //More code from facebook. Login status tells us if we're already
     //in or if we need to do a FB.login() dialog.
-    FB.getLoginStatus(function(response) {
-      if (response.status === 'connected') {
-        vm.facebookStatusConnected(response);
-      } else if (response.status === 'not_authorized') {
-        vm.facebookStatusNotAuthorized(response);
-      } else {
-        vm.facebookStatusUnknown(response);
-      }
-      m.render();
-    });
+    var vm = this;
+    FB.getLoginStatus( (response)=>{ vm.statusChangeCallback(response); });
   }
 
+
+  // Facebook SDK code, refactored into init code
   facebookInitSDK(appId){
     var vm = this;
     //This code comes from facebook, and is normally just pasted in a
@@ -69,8 +118,10 @@ export default class VMfacebook extends VM {
         xfbml      : false,
         version    : 'v2.5'
       });
-      vm.facebookAfterInit();
-      m.render();
+      console.log('fbAsyncInit');
+      //after facebook init, I want to get user login state
+      window.fbLoaded = true;
+      vm.checkLoginState();
     };
     //This call loads the sdk and calls fbAsyncInit after loaded.
     (function(d, s, id){
@@ -82,28 +133,46 @@ export default class VMfacebook extends VM {
     }(document, 'script', 'facebook-jssdk'));
   }
 
-  loginForm(ctrl){
-    if(this.fbLoaded()){
-      if(this.fbConnected()){
-        return m('.fb','Logged through Facebook!');
-      } else {
-        return m('.fb','Not logged in yet!');
-      }
-    } else {
-      return m('.fb','Facebook Login Loading...');
+
+
+
+
+  /*
+   * View Rendering Functions
+   * */
+
+  formReRender(){
+    var domel = document.getElementById('fblogin');
+    if(!domel){ return; }
+    m.render(domel,this.loginForm());
+  }
+
+  loginForm(){
+    var vm = this;
+    var form = '';
+    var attrs = {
+      onclick: ()=>{vm.doFBLogin();}
     }
+    if(window.fbLoaded){
+      form = m('button.fbbutton.col-xs-12',attrs,'Log in with Facebook');
+    }
+    return m('.form',[
+        form,
+        //m('pre',JSON.stringify(this.fbResponse(),1)),
+        //m('pre',this.error()),
+        ]);
   }
 
   view(ctrl) {
     let vm = ctrl.vm;
-    vm.facebookInitSDK(CONFIG.auth.facebookAppID);
     return m('.facebook', [
         BS.row([
-          BS.col(['col-xs-12','col-md-6'],BS.panel( vm.loginForm(ctrl),'Facebook Log In')),
-          ]),
-        m('.loading',vm.fbLoaded()),
-        m('.connecting',vm.fbConnected()),
-        m('.fbstatus',vm.fbStatus()),
+          BS.col(['col-xs-12','col-md-6'],
+            BS.panel(
+              m('.fblogin',{id:'fblogin'},vm.loginForm()), 'Facebook Log In')
+            ),
+          ])
         ]);
-  }
+  };
+
 };

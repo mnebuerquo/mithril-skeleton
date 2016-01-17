@@ -42,7 +42,7 @@ export function panel(content, title, type, attrs){
     type = type.replace('panel-','');
     panelclass = '.panel-'+type;
   }
-  return m('.panel'+panelclass,attrs,[
+  return m('.panel'+panelclass,[
       heading,
       m('.panel-body',content)
       ]);

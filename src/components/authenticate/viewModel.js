@@ -32,5 +32,10 @@ export default class VM {
     this.error(data.error && data.error.text);
   }
 
+  setLogoutCallback(fn){
+    let sess = session();
+    sess.logoutCallback = fn;
+  }
+
 
 };

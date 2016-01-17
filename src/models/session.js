@@ -21,11 +21,16 @@ class Session{
     if(this.token()){
       this.getUser();
     }
+    this.logoutCallback = ()=>{};
   }
 
   logOut(){
     this.token('');
     this.user({});
+    if(this.logoutCallback){
+      this.logoutCallback();
+      this.logoutCallback = ()=>{};
+    }
   }
 
   isAuthenticated() {
@@ -47,8 +52,8 @@ class Session{
     let self = this;
     m.request({
       method: 'GET',
-           url: this.config.api.url+'user',
-           config: this.xhrConfig(),
+      url: this.config.api.url+'user',
+      config: this.xhrConfig(),
     }).then(
       function(user){
         self.user(user);
