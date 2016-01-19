@@ -29,7 +29,9 @@ export default class VM {
 
   onError(data) {
     console.log(data);
-    this.error(data.error && data.error.text);
+    this.error(
+        (data.error && (data.error.usertext || data.error.text)) || 'An error has occurred.'
+        );
   }
 
   setLogoutCallback(fn){

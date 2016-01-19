@@ -2,15 +2,16 @@
   "api": {
     "url": "http://localhost:3000/api/"
   },
-  "app": {
-    "requireBirthdate": true
-  },
   "auth":{
     "facebook":{
       "appID": "",
       "apiRoute": "auth/facebook/token",
       "apiToken": "token",
       "scope": "public_profile,email"
+    },
+    "password":{
+      "requireBirthdate": true,
+
     }
   }
 }

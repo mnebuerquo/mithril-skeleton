@@ -82,8 +82,8 @@ export default class VMpassword extends VM {
         m("input.repeat.col-xs-6[placeholder='Repeat Password'][name=repeat][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
-        (sk_conf.app.requireBirthdate?m(ctrl.vm.datecmp):''),
-        (sk_conf.app.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
+        (sk_conf.password.requireBirthdate?m(ctrl.vm.datecmp):''),
+        (sk_conf.password.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
         m("button.col-xs-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }
@@ -96,16 +96,19 @@ export default class VMpassword extends VM {
       this.onError({error: { text:'Passwords do not match.' } });
       return;
     }
+    //TODO: password complexity? password strength?
     if( !this.username() || !this.password() )
     {
-      this.onError({error: {text: 'You must specify both an identity and password to create an account.'}});
+      this.onError( { error: {
+        text: 'You must specify both an identity and password to create an account.'
+        } } );
       return;
     }
     var postdata = {
       username: this.username(),
       password: this.password(),
     };
-    if(sk_conf.app.requireBirthdate){
+    if(sk_conf.password.requireBirthdate){
       postdata.birthdate = this.birthday();
     }
     var postargs = {
