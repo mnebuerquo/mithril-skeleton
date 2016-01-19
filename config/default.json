@@ -10,8 +10,7 @@
       "scope": "public_profile,email"
     },
     "password":{
-      "requireBirthdate": true,
-
+      "requireBirthdate": true
     }
   }
 }
