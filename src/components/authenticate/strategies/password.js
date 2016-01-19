@@ -82,8 +82,8 @@ export default class VMpassword extends VM {
         m("input.repeat.col-xs-6[placeholder='Repeat Password'][name=repeat][type=password]",
           {oninput: m.withAttr("value", ctrl.vm.repeat)},
           ctrl.vm.repeat()),
-        (sk_conf.password.requireBirthdate?m(ctrl.vm.datecmp):''),
-        (sk_conf.password.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
+        (sk_conf.auth.password.requireBirthdate?m(ctrl.vm.datecmp):''),
+        (sk_conf.auth.password.requireBirthdate?m('.col-xs-12.bg-danger', ctrl.vm.bderror() || ""):''),
         m("button.col-xs-12", {onclick: ()=>{ctrl.vm.createSubmit();}}, "Create Account"),
         ]);
   }
@@ -108,7 +108,7 @@ export default class VMpassword extends VM {
       username: this.username(),
       password: this.password(),
     };
-    if(sk_conf.password.requireBirthdate){
+    if(sk_conf.auth.password.requireBirthdate){
       postdata.birthdate = this.birthday();
     }
     var postargs = {
