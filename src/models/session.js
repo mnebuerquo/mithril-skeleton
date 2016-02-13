@@ -52,7 +52,7 @@ class Session{
     let self = this;
     m.request({
       method: 'GET',
-      url: this.sk_conf.api.url+'user',
+      url: this.sk_conf.api.url+'v0/token/user',
       config: this.xhrConfig(),
     }).then(
       function(user){
