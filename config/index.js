@@ -24,6 +24,10 @@ fs.readdirSync(__dirname).forEach(function(filename) {
   console.log('done');
 });
 
+// make sure we don't have undefined objects
+defaultConf = (defaultConf?defaultConf:{});
+userConf = (userConf?userConf:{});
+
 // do deepmerge of config into default
 var merge = require('deepmerge');
 var config = merge(defaultConf,userConf);
